@@ -7,8 +7,6 @@ This project is about building a system that can spot and address issues in text
 
 # Why We’re Doing This
 
-# The main reasons for this project are:
-
  - To understand how hallucinations happen in texts written in multiple languages.
 
  - To create machine learning tools that can highlight and fix these mistakes.
