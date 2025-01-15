@@ -4,7 +4,9 @@ import os
 import argparse
 import torch.nn.functional as F
 from transformers import AutoTokenizer, AutoModelForTokenClassification, Trainer, TrainingArguments
-from datasets import load_dataset, load_metric
+from datasets import load_dataset
+from evaluate import load
+
 
 LABEL_LIST=[0,1]
 LANGS = ['ar', 'de', 'en', 'es', 'fi', 'fr', 'hi', 'it', 'sv', 'zh']
@@ -59,7 +61,7 @@ def train_model(test_lang, data_path, output_dir):
     )
 
     # Define the metric
-    metric = load_metric('seqeval', trust_remote_code=True)
+    metric = load('seqeval', trust_remote_code=True)
 
     def compute_metrics(p):
         predictions, labels = p
@@ -100,7 +102,7 @@ def test_model(test_lang, model_path, data_path):
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
     model = AutoModelForTokenClassification.from_pretrained(model_path)
     # Load the test dataset
-    test_dataset = load_dataset('json', data_files={'test': f'{data_path}/mushroom.{test_lang}-val.v2.jsonl'})['test']
+    test_dataset = load_dataset('json', data_files={'test': f'{data_path}mushroom.{test_lang}-val.v2.jsonl'})['test']
     # Tokenize test dataset
     inputs = tokenizer(test_dataset['model_output_text'], padding=True, truncation=True, return_offsets_mapping=True, return_tensors="pt")
 
@@ -148,7 +150,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train or test the model")
     parser.add_argument('--mode', type=str, choices=['train', 'test'], default='train')
-    parser.add_argument('--data_path', type=str, help="Path to the training data")
+    parser.add_argument('--data_path', type=str, help="Path to the training data", default="Data/val")
     parser.add_argument('--model_checkpoint', type=str, default="./results", help="Path to the trained checkpoint")
     parser.add_argument('--test_lang', type=str, default="ar")
     args = parser.parse_args()
